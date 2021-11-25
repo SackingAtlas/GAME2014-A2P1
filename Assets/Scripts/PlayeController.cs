@@ -4,7 +4,10 @@ public class PlayeController : MonoBehaviour
     public float maxSwipe;
     Vector2 moveTo;
     float lastPosition;
-    Vector3 startTouch;
+    float startTime;
+    float speedHitWith;
+    Vector3 startTouch, lastTouch, hitFrom;
+    Vector3 worldTouch;
 
     bool moved, newHit, moveHere, inAir, haveBeenHit = false;
     public float runSpeed = 10.0f;
@@ -57,7 +60,7 @@ public class PlayeController : MonoBehaviour
     {
         foreach (Touch touch in Input.touches)
         {
-            var worldTouch = Camera.main.ScreenToWorldPoint(touch.position);
+            worldTouch = Camera.main.ScreenToWorldPoint(touch.position);
             switch (touch.phase)
             {
                 case TouchPhase.Began:
@@ -70,14 +73,17 @@ public class PlayeController : MonoBehaviour
                         moved = true;
                         if (!inAir && haveBeenHit == true && newHit == true)
                         {
-                            Vector2 firePower = (worldTouch - startTouch) * pullForce;
-                            rb.velocity = firePower;
-                            moved = false;
-                            moveHere = false;
-                            anim.SetBool("inAir", true);
-                            inAir = true;
-                            haveBeenHit = false;
-                            newHit = false;
+                            speedHitWith = (worldTouch - lastTouch).magnitude;
+                            FlickEyeball();
+                            lastTouch = worldTouch;
+                            //Vector2 firePower = (worldTouch - startTouch) * pullForce;
+                            //rb.velocity = firePower;
+                            //moved = false;
+                            //moveHere = false;
+                            //anim.SetBool("inAir", true);
+                            //inAir = true;
+                            //haveBeenHit = false;
+                            //newHit = false;
                         }
                     }
                     break;
@@ -109,6 +115,30 @@ public class PlayeController : MonoBehaviour
                 transform.position = Vector2.MoveTowards(transform.position, moveTo, runSpeed * Time.deltaTime);       
     }
 
+    private void FlickEyeball()
+    {
+        //float distanceTraveled = Vector2.Distance(startTouch, worldTouch);
+        //float speedHit = distanceTraveled / startTime;
+        //Debug.Log(speedHit);
+        //Vector2 firePower = (worldTouch - startTouch) * pullForce * speedHit;
+        //Debug.Log(firePower);
+
+        Vector2 firePower = (worldTouch - startTouch) * (speedHitWith * pullForce);
+        rb.velocity = firePower;
+        moved = false;
+        moveHere = false;
+        anim.SetBool("inAir", true);
+        inAir = true;
+        haveBeenHit = false;
+        newHit = false;
+    }
+
+    public void Attack()
+    {
+        Debug.Log("down fucked");
+        buttonObject.GetComponent<ButtonScripts>().buttonTouched = false;
+    }
+
     void OnCollisionEnter2D(Collision2D col)
     {
         anim.SetBool("inAir", false);
@@ -127,5 +157,6 @@ public class PlayeController : MonoBehaviour
     {
         if (collision.gameObject.name == "FingerSwinger")
             haveBeenHit = true;
+        hitFrom = collision.transform.position;
     }
 }

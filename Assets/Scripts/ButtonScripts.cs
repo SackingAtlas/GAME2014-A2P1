@@ -11,6 +11,8 @@ public class ButtonScripts : MonoBehaviour
     public bool buttonTouched = false;
     private bool zoomingIn = false;
 
+    public GameObject playerReferance;
+
 
     private void Start()
     {
@@ -45,5 +47,11 @@ public class ButtonScripts : MonoBehaviour
     public void ZoomButtonReleased()
     {
         zoomingIn = false;
+    }
+
+    public void AttackButtonPressed()
+    {
+        buttonTouched = true;
+        playerReferance.GetComponent<PlayeController>().Attack();
     }
 }
