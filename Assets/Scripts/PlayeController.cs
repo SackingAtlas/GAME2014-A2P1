@@ -6,6 +6,7 @@ public class PlayeController : MonoBehaviour
     float lastPosition;
     float startTime;
     float speedHitWith;
+    float timer;
     Vector3 startTouch, lastTouch, hitFrom;
     Vector3 worldTouch;
 
@@ -14,6 +15,7 @@ public class PlayeController : MonoBehaviour
     public float pullForce;
 
     Animator anim;
+    public Animator blinkAnim;
     Rigidbody2D rb;
     public GameObject buttonObject;
 
@@ -38,6 +40,18 @@ public class PlayeController : MonoBehaviour
         Facing();
     }
 
+    private void IdleCheck()
+    {
+        timer -= Time.deltaTime;
+        if(timer <= 0)
+        {
+            if (Random.Range(1, 100) < 40)
+                anim.Play("Blink");
+            if (Random.Range(1, 100) < 25)
+                blinkAnim.SetTrigger("Blink");
+            timer = 2f;
+        }
+    }
     private void Facing()
     {
         if(lastPosition != transform.position.x)
@@ -52,9 +66,12 @@ public class PlayeController : MonoBehaviour
                 GetComponent<SpriteRenderer>().flipX = true;
             }
             lastPosition = transform.position.x;
-        }      
+        }
         else
+        {
+            IdleCheck();
             anim.SetBool("moving", false);
+        }
     }
     private void Move()
     {

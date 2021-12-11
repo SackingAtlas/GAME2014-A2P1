@@ -476,7 +476,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 2734932955589528324, guid: 8fd3d461d9c517640b61b9262572d194, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 0.17, y: 0.21}
@@ -1356,7 +1356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &1800993417
 Animator:
   serializedVersion: 3
