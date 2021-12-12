@@ -4,19 +4,20 @@ public class PlayeController : MonoBehaviour
     public float maxSwipe;
     Vector2 moveTo;
     float lastPosition;
-    float startTime;
+    float groundedTime, endTime;
     float speedHitWith;
-    float timer;
-    Vector3 startTouch, lastTouch, hitFrom;
+    float idleTimer, hitTimer;
+    Vector3 startTouch, lastTouch, hitFrom, startHit, endHit;
     Vector3 worldTouch;
 
-    bool moved, newHit, moveHere, inAir, haveBeenHit = false;
+    bool moved, newHit, tapped, inAir, haveBeenHit = false;
     public float runSpeed = 10.0f;
-    public float pullForce;
+    public float flickForce;
 
     Animator anim;
     public Animator blinkAnim;
     Rigidbody2D rb;
+    GroundedScript onGround;
     public GameObject buttonObject;
 
 
@@ -24,32 +25,32 @@ public class PlayeController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        onGround = GetComponentInChildren<GroundedScript>();
     }
-
-
-    //maybe set up swipe to hit
-    //power of hit based of time and distance touch takes
-    //must hit eyeball
 
     void Update()
     {
+        //Debug.Log(onGround.isGrounded);
+        hitTimer += Time.deltaTime;
         if (!buttonObject.GetComponent<ButtonScripts>().buttonTouched)
         {
             Move();
         }
         Facing();
+        anim.SetBool("inAir", !onGround.isGrounded);
+        inAir = !onGround.isGrounded;
     }
 
     private void IdleCheck()
     {
-        timer -= Time.deltaTime;
-        if(timer <= 0)
+        idleTimer -= Time.deltaTime;
+        if(idleTimer <= 0)
         {
             if (Random.Range(1, 100) < 40)
                 anim.Play("Blink");
             if (Random.Range(1, 100) < 25)
                 blinkAnim.SetTrigger("Blink");
-            timer = 2f;
+            idleTimer = 2f;
         }
     }
     private void Facing()
@@ -82,72 +83,42 @@ public class PlayeController : MonoBehaviour
             {
                 case TouchPhase.Began:
                     startTouch = worldTouch;
+                    newHit = true;
                     break;
 
                 case TouchPhase.Moved:
-                    if(Vector3.Distance(startTouch, worldTouch) > maxSwipe)
+                    if (Vector3.Distance(startTouch, worldTouch) > maxSwipe)
                     {
                         moved = true;
-                        if (!inAir && haveBeenHit == true && newHit == true)
+                        tapped = false;
+                        if (!inAir && haveBeenHit)
                         {
-                            speedHitWith = (worldTouch - lastTouch).magnitude;
                             FlickEyeball();
-                            lastTouch = worldTouch;
-                            //Vector2 firePower = (worldTouch - startTouch) * pullForce;
-                            //rb.velocity = firePower;
-                            //moved = false;
-                            //moveHere = false;
-                            //anim.SetBool("inAir", true);
-                            //inAir = true;
-                            //haveBeenHit = false;
-                            //newHit = false;
                         }
                     }
                     break;
 
                 case TouchPhase.Ended:
-                    if (!moved)
+                    if (!moved && !inAir)
                     {
                         moveTo = new Vector2(worldTouch.x, transform.position.y);
-                        moveHere = true;
+                        tapped = true;
                     }
-                    //else
-                    //{
-                    //    if (!inAir && haveBeenHit == true)
-                    //    {
-                    //        Vector2 firePower = (worldTouch - startTouch) * pullForce;
-                    //        rb.velocity = firePower;
-                    //        moved = false;
-                    //        moveHere = false;
-                    //        anim.SetBool("inAir", true);
-                    //        inAir = true;
-                    //        haveBeenHit = false;
-                    //    }
-                    //}
-                    newHit = true;
+                    else
+                    moved = false;
+                    haveBeenHit = false;
                     break;
             }            
         }
-        if (moveHere && moveTo.x != transform.position.x)
+        if (!inAir && tapped && moveTo.x != transform.position.x)
                 transform.position = Vector2.MoveTowards(transform.position, moveTo, runSpeed * Time.deltaTime);       
     }
 
     private void FlickEyeball()
     {
-        //float distanceTraveled = Vector2.Distance(startTouch, worldTouch);
-        //float speedHit = distanceTraveled / startTime;
-        //Debug.Log(speedHit);
-        //Vector2 firePower = (worldTouch - startTouch) * pullForce * speedHit;
-        //Debug.Log(firePower);
-
-        Vector2 firePower = (worldTouch - startTouch) * (speedHitWith * pullForce);
+        speedHitWith = Vector3.Distance(startHit, endHit) / endTime;
+        Vector2 firePower = (endHit - startHit) * (speedHitWith * flickForce);
         rb.velocity = firePower;
-        moved = false;
-        moveHere = false;
-        anim.SetBool("inAir", true);
-        inAir = true;
-        haveBeenHit = false;
-        newHit = false;
     }
 
     public void Attack()
@@ -156,24 +127,22 @@ public class PlayeController : MonoBehaviour
         buttonObject.GetComponent<ButtonScripts>().buttonTouched = false;
     }
 
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        anim.SetBool("inAir", false);
-        inAir = false;
-        if(col.gameObject.name == "FingerSwinger")
-        Debug.Log(col.contacts[0].point);
-    }
-
-    //void OnCollisionExit2D(Collision2D col)
-    //{
-    //    anim.SetBool("inAir", true);
-    //    inAir = true;
-    //}
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.name == "FingerSwinger")
+        {
+            hitTimer = 0f;
+            startHit = collision.transform.position;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "FingerSwinger")
+        {
+            endHit = collision.transform.position;
+            endTime = hitTimer;
             haveBeenHit = true;
-        hitFrom = collision.transform.position;
+            newHit = false;
+        }
     }
 }
