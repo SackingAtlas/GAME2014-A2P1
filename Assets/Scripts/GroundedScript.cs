@@ -6,7 +6,18 @@ public class GroundedScript : MonoBehaviour
 {
 
     public bool isGrounded;
+    public bool hitWall;
+    public float wallPosition;
 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Wall")
+        {
+            hitWall = true;
+            wallPosition = collision.transform.position.x;
+        }
+    }
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Ground")
@@ -16,6 +27,10 @@ public class GroundedScript : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
             isGrounded = false;
+        if (collision.gameObject.tag == "Wall")
+        {
+            hitWall = false;
+        }
     }
 }
 

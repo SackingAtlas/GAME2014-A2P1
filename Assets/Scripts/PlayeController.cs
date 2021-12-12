@@ -111,7 +111,28 @@ public class PlayeController : MonoBehaviour
             }            
         }
         if (!inAir && tapped && moveTo.x != transform.position.x)
-                transform.position = Vector2.MoveTowards(transform.position, moveTo, runSpeed * Time.deltaTime);       
+        {
+            if (onGround.hitWall)
+            {
+                if (onGround.wallPosition < transform.position.x)
+                {
+                    if (moveTo.x > transform.position.x)
+                        onGround.hitWall = false;
+                    else
+                        moveTo = transform.position;
+                }
+                else
+                {
+                    {
+                        if (moveTo.x < transform.position.x)
+                            onGround.hitWall = false;
+                        else
+                            moveTo = transform.position;
+                    }
+                }
+            }
+            transform.position = Vector2.MoveTowards(transform.position, moveTo, runSpeed * Time.deltaTime);
+        }                
     }
 
     private void FlickEyeball()
