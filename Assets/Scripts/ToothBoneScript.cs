@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class ToothBoneScript : MonoBehaviour
 {
-    public GameObject toothPrefab;
-    public Transform spawnPoint;
-    public void Spawn()
-    {
-        Instantiate(toothPrefab, spawnPoint);
-    }
-    public void Destroy()
-    {
-        Destroy(gameObject);
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Player")
+    //    {
+    //        Debug.Log("tyurd");
+    //    }
+    //}
 }

@@ -12,6 +12,7 @@ public class ButtonScripts : MonoBehaviour
     private bool zoomingIn = false;
 
     public GameObject playerReferance;
+    public GameObject blinker;
 
 
     private void Start()
@@ -21,14 +22,23 @@ public class ButtonScripts : MonoBehaviour
     }
     private void Update()
     {
-        if(zoomingIn == false)
+        if (cam.orthographicSize <= 5)
+        {
+            blinker.SetActive(true);
+            playerReferance.GetComponent<PlayeController>().buttonPressed = false;
+        }
+        else
+        {
+            blinker.SetActive(false);
+            playerReferance.GetComponent<PlayeController>().buttonPressed = true;
+        }
+
+        if (zoomingIn == false)
         {
             if (cam.orthographicSize > minZoom)
             {
                 cam.orthographicSize -= Time.deltaTime * zoom;
             }
-            else
-                buttonTouched = false;
         }
         else
         {
@@ -40,18 +50,12 @@ public class ButtonScripts : MonoBehaviour
     }
     public void ZoomButtonPressed()
     {
-        buttonTouched = true;
         zoomingIn = true;
+        playerReferance.GetComponent<PlayeController>().buttonPressed = true;
     }
 
     public void ZoomButtonReleased()
     {
         zoomingIn = false;
-    }
-
-    public void AttackButtonPressed()
-    {
-        buttonTouched = true;
-        playerReferance.GetComponent<PlayeController>().Attack();
     }
 }

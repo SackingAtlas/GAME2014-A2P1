@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 public class PlayeController : MonoBehaviour
 {
     public float maxSwipe;
@@ -6,11 +9,12 @@ public class PlayeController : MonoBehaviour
     float lastPosition;
     float groundedTime, endTime;
     float speedHitWith;
-    float idleTimer, hitTimer;
+    float idleTimer, hitTimer, HazradHurtTimer, sheildTimer, touchTimer;
     Vector3 startTouch, lastTouch, hitFrom, startHit, endHit;
     Vector3 worldTouch;
 
-    bool moved, newHit, tapped, inAir, haveBeenHit = false;
+    bool moved, newHit, inAir, haveBeenHit = false;
+    public bool tapped = false;
     public float runSpeed = 10.0f;
     public float flickForce;
 
@@ -18,7 +22,9 @@ public class PlayeController : MonoBehaviour
     public Animator blinkAnim;
     Rigidbody2D rb;
     GroundedScript onGround;
-    public GameObject buttonObject;
+    public bool buttonPressed, buttonPressed2;
+    public Slider HealthBar, ManaBar;
+    public GameObject Sheild;
 
 
     void Start()
@@ -26,16 +32,18 @@ public class PlayeController : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         onGround = GetComponentInChildren<GroundedScript>();
+        HealthBar.value = 100;
+        ManaBar.value = 100;
     }
 
     void Update()
     {
-        //Debug.Log(onGround.isGrounded);
-        hitTimer += Time.deltaTime;
-        if (!buttonObject.GetComponent<ButtonScripts>().buttonTouched)
-        {
-            Move();
-        }
+        Debug.Log(HazradHurtTimer);
+        Timers();
+
+        if(!buttonPressed)
+        Move();
+
         Facing();
         anim.SetBool("inAir", !onGround.isGrounded);
         inAir = !onGround.isGrounded;
@@ -99,13 +107,15 @@ public class PlayeController : MonoBehaviour
                     break;
 
                 case TouchPhase.Ended:
-                    if (!moved && !inAir)
+                    if (!moved && !inAir && touchTimer > 0)
                     {
                         moveTo = new Vector2(worldTouch.x, transform.position.y);
                         tapped = true;
                     }
                     else
-                    moved = false;
+                    {
+                        moved = false;
+                    }
                     haveBeenHit = false;
                     break;
             }            
@@ -141,19 +151,43 @@ public class PlayeController : MonoBehaviour
         Vector2 firePower = (endHit - startHit) * (speedHitWith * flickForce);
         rb.velocity = firePower;
     }
-
-    public void Attack()
+    public void Timers()
     {
-        Debug.Log("down fucked");
-        buttonObject.GetComponent<ButtonScripts>().buttonTouched = false;
+        if (HazradHurtTimer > 0)
+            HazradHurtTimer -= Time.deltaTime;
+        if(hitTimer < 2)
+            hitTimer += Time.deltaTime;
     }
-
+    private void TakeDamage()
+    {
+        if(sheildTimer <= 0)
+        {
+            anim.Play("Hurt");
+            HazradHurtTimer = 0.5f;
+            HealthBar.value -= 10;
+        }
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.name == "FingerSwinger")
         {
             hitTimer = 0f;
             startHit = collision.transform.position;
+        }
+        if (collision.gameObject.tag == "Hazard")
+        {
+            TakeDamage();
+
+        }
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Hazard")
+        {
+            if(HazradHurtTimer <= 0)
+            {
+                TakeDamage();
+            }
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

@@ -42,9 +42,10 @@ GameObject:
   - component: {fileID: 8747993876643038502}
   - component: {fileID: 8747993876643038500}
   - component: {fileID: 8747993876643038501}
+  - component: {fileID: 6400260941903940014}
   m_Layer: 0
   m_Name: bones_2
-  m_TagString: Untagged
+  m_TagString: Hazard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -134,3 +135,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!70 &6400260941903940014
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8747993876643038503}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.03582352, y: 1.2455394e-16}
+  m_Size: {x: 0.42835313, y: 0.26000005}
+  m_Direction: 1
