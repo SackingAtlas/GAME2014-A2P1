@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class IntroButtons : MonoBehaviour
 {
     public void PlayPressed()
     {
-        Debug.Log("1");
+        SceneManager.LoadScene("Game");
         GameObject.Find("Blink").GetComponent<AnimEvents>().PlayHasBegun = true;
         GameObject.Find("Blink").GetComponent<Animator>().SetBool("blink", true);
     }

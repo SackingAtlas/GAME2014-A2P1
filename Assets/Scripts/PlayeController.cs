@@ -9,7 +9,7 @@ public class PlayeController : MonoBehaviour
     float lastPosition;
     float groundedTime, endTime;
     float speedHitWith;
-    float idleTimer, hitTimer, HazradHurtTimer, sheildTimer, touchTimer;
+    float idleTimer, hitTimer, HazradHurtTimer, sheildTimer;
     Vector3 startTouch, lastTouch, hitFrom, startHit, endHit;
     Vector3 worldTouch;
 
@@ -22,9 +22,8 @@ public class PlayeController : MonoBehaviour
     public Animator blinkAnim;
     Rigidbody2D rb;
     GroundedScript onGround;
-    public bool buttonPressed, buttonPressed2;
-    public Slider HealthBar, ManaBar;
-    public GameObject Sheild;
+    public bool buttonPressed;
+    public Slider HealthBar;
 
 
     void Start()
@@ -33,7 +32,6 @@ public class PlayeController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         onGround = GetComponentInChildren<GroundedScript>();
         HealthBar.value = 100;
-        ManaBar.value = 100;
     }
 
     void Update()
@@ -107,15 +105,13 @@ public class PlayeController : MonoBehaviour
                     break;
 
                 case TouchPhase.Ended:
-                    if (!moved && !inAir && touchTimer > 0)
+                    if (!moved && !inAir)
                     {
                         moveTo = new Vector2(worldTouch.x, transform.position.y);
                         tapped = true;
                     }
                     else
-                    {
-                        moved = false;
-                    }
+                    moved = false;
                     haveBeenHit = false;
                     break;
             }            
@@ -153,7 +149,7 @@ public class PlayeController : MonoBehaviour
     }
     public void Timers()
     {
-        if (HazradHurtTimer > 0)
+        if(HazradHurtTimer > 0)
             HazradHurtTimer -= Time.deltaTime;
         if(hitTimer < 2)
             hitTimer += Time.deltaTime;
