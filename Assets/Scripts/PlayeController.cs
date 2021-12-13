@@ -32,6 +32,7 @@ public class PlayeController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         onGround = GetComponentInChildren<GroundedScript>();
         HealthBar.value = 100;
+        lastPosition = transform.position.x;
     }
 
     void Update()

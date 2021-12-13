@@ -14,9 +14,9 @@ public class MovingPlatform : MonoBehaviour
     }
     void Update()
     {
-        if (bone.transform.position == end.position)
+        if (Vector2.Distance(bone.transform.position, end.position) < flipRadius)
             goToHere = start.position;
-        if (bone.transform.position == start.position)
+        if (Vector2.Distance(bone.transform.position, start.position) < flipRadius)
             goToHere = end.position;
         bone.transform.position = Vector2.MoveTowards(bone.transform.position, goToHere, speed * Time.deltaTime);
     }

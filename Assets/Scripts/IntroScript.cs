@@ -24,7 +24,7 @@ public class IntroScript : MonoBehaviour
         playButton = GameObject.Find("PlayButton");
         backButton = GameObject.Find("BackButton");
 
-        DontDestroyOnLoad(blink);
+        //DontDestroyOnLoad(blink);
 
         bg2.SetActive(false);
         blink.SetActive(false);
